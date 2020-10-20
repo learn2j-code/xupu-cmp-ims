@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd 
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+    <context:annotation-config/>
+    <context:component-scan base-package="com.jff.ims.**.controller">
+          <context:include-filter type="annotation" 
+          expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <mvc:annotation-driven>  
+    <!-- 处理responseBody 里面日期类型 -->  
+        <mvc:message-converters>  
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">  
+                <property name="objectMapper">  
+                    <bean class="com.fasterxml.jackson.databind.ObjectMapper">  
+                        <property name="dateFormat">  
+                            <bean class="java.text.SimpleDateFormat">  
+                                <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss" />  
+                            </bean>  
+                        </property>  
+                    </bean>  
+                </property>  
+            </bean>  
+        </mvc:message-converters>  
+    
+    </mvc:annotation-driven>
+    <!-- don't handle the static resource -->
+    <mvc:default-servlet-handler />
+    
+    <mvc:resources mapping="/css/**" location="/WEB-INF/css/"/>	
+	<mvc:resources mapping="/fonts/**" location="/WEB-INF/fonts/"/>
+	<mvc:resources mapping="/images/**" location="/WEB-INF/images/"/>
+    <mvc:resources mapping="/js/**" location="/WEB-INF/js/"/> 
+    
+    <!-- 配置视图解析器，如何报handler方法返回值解析为实际的物理视图 -->  
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">  
+        <!-- <property name="viewClass" value="com.move.webproject.Tools.HtmlResourceView"/>  -->   
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/> 
+        <property name="order" value="0" />    
+        <property name="prefix" value="/WEB-INF/"></property>  
+        <property name="suffix" value=".jsp"></property>  
+    </bean>  
+      
+     <bean id="htmlviewResolver"      
+        class="org.springframework.web.servlet.view.InternalResourceViewResolver">     
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>     
+        <property name="order" value="1" />    
+        <property name="prefix" value="/WEB-INF/"/>    
+        <property name="suffix" value=".html" />      
+        <property name="contentType" value="text/html;charset=UTF-8"></property>      
+    </bean>   
+    
+	<!-- 开放上传功能 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    	<property name="defaultEncoding" value="UTF-8" />
+		<!-- 上传最大限制 300M；20M:20971520-->
+		<property name="maxUploadSize" value="314572800" />
+		<property name="maxInMemorySize" value="40960" />
+		<!-- resolveLazily属性启用是为了推迟文件解析，以便在UploadAction 中捕获文件大小异常-->
+		<property name="resolveLazily" value="true"/>
+	</bean> 
+</beans>
